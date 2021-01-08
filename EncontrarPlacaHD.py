@@ -8,6 +8,7 @@ import numpy as np
 import tkinter
 import pytesseract
 import cv2
+out = "/home/jacson/Desktop/PythonOpenCVPlateRecognition/output/";
 
 def findPlace(contornos, imagem):#
 
@@ -20,13 +21,13 @@ def findPlace(contornos, imagem):#
            #verifica se é um quadrado ou retangulo de acordo com a qtd de vertices
            if len(approx) == 4:
              #Contorna a placa atraves dos contornos encontrados
-             #cv2.drawContours(imagem, [c], -1, (0, 255, 0), 2)
+             cv2.drawContours(imagem, [c], -1, (0, 255, 0), 2)
              (x, y, lar, alt) = cv2.boundingRect(c)
              cv2.rectangle(imagem, (x, y), (x + lar, y + alt), (0, 255, 0), 2)
              #segmenta a placa da imagem
              roi = imagem[(y+15):y+alt, x:x+lar]
              #salva a imagem segmentada em "C:/Tesseract-OCR/saidas/"
-             cv2.imwrite("C:/Tesseract-OCR/saidas/roi.jpg", roi)
+             cv2.imwrite(out+"carro4.jpg", roi)
                 
     return imagem
 
@@ -41,7 +42,7 @@ def reconhecimentoOCR(path_img):
 
     # Converte para escala de cinza
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # cv2.imshow("Escala Cinza", img)
+     cv2.imshow("Escala Cinza", img)
 
     # Binariza a imagem (preto e branco)
     ret, img = cv2.threshold(img, 70, 255, cv2.THRESH_BINARY)
@@ -49,7 +50,7 @@ def reconhecimentoOCR(path_img):
 
     # Aplica um desfoque na Imagem
     img = cv2.GaussianBlur(img, (5, 5), 0)
-    # cv2.imshow("Desfoque", img)
+     cv2.imshow("Desfoque", img)
     
     # Grava o resultado no endereco path+/ocr.jpg
     cv2.imwrite(path_img + "-ocr.jpg", img)
@@ -77,47 +78,47 @@ def removerChars(text):
         text = text.replace(x, '')
     return text
 
-#Captura ou Video
-video = cv2.VideoCapture('resource\\video1-720p.mkv')
+# #Captura ou Video
+# video = cv2.VideoCapture('resource\\video1-720p.mkv')
 
-while(video.isOpened()):
+# while(video.isOpened()):
 
-    ret, frame = video.read()
+#     ret, frame = video.read()
 
-    if(ret == False):
-        break
+#     if(ret == False):
+#         break
 
-    #area de localização
-    area = frame[500: , 300:800]
+#     #area de localização
+#     area = frame[500: , 300:800]
 
-    # escala de cinza
-    img_result = cv2.cvtColor(area, cv2.COLOR_BGR2GRAY)
+#     # escala de cinza
+#     img_result = cv2.cvtColor(area, cv2.COLOR_BGR2GRAY)
 
-    # limiarização
-    ret, img_result = cv2.threshold(img_result, 90, 255, cv2.THRESH_BINARY)
+#     # limiarização
+#     ret, img_result = cv2.threshold(img_result, 90, 255, cv2.THRESH_BINARY)
 
-    # desfoque
-    img_result = cv2.GaussianBlur(img_result, (5, 5), 0)
+#     # desfoque
+#     img_result = cv2.GaussianBlur(img_result, (5, 5), 0)
 
-    # lista os contornos
-    img, contornos, hier = cv2.findContours(img_result, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+#     # lista os contornos
+#     img, contornos, hier = cv2.findContours(img_result, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
-    # limite horizontal
-    cv2.line(frame, (0, 500), (1280, 500), (0, 0, 255), 1)
-    # limite vertical 1
-    cv2.line(frame, (300, 0), (300, 720), (0, 0, 255), 1)
-    # limite vertical 2
-    cv2.line(frame, (800, 0), (800, 720), (0, 0, 255), 1)
+#     # limite horizontal
+#     cv2.line(frame, (0, 500), (1280, 500), (0, 0, 255), 1)
+#     # limite vertical 1
+#     cv2.line(frame, (300, 0), (300, 720), (0, 0, 255), 1)
+#     # limite vertical 2
+#     cv2.line(frame, (800, 0), (800, 720), (0, 0, 255), 1)
 
-    cv2.imshow('FRAME', frame)
+#     cv2.imshow('FRAME', frame)
 
-    findPlace(contornos, area)
+#     findPlace(contornos, area)
 
-    cv2.imshow('RES', area)
+#     cv2.imshow('RES', area)
 
-    if cv2.waitKey(1) & 0xff == ord('q'):
-        break
+#     if cv2.waitKey(1) & 0xff == ord('q'):
+#         break
 
-video.release()
-reconhecimentoOCR("C:/Tesseract-OCR/saidas/roi")
+# video.release()
+reconhecimentoOCR(out+"carro4")
 cv2.destroyAllWindows()

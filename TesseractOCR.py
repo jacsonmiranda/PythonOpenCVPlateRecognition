@@ -7,6 +7,7 @@ from PIL import Image
 import tkinter
 import pytesseract
 import cv2
+out = "/home/jacson/Desktop/PythonOpenCVPlateRecognition/output/";
 
 class TesseractOCR():
     def __init__(self):
@@ -17,19 +18,19 @@ class TesseractOCR():
 
         # amplia a imagem da placa em 4
         img = cv2.resize(entrada, None, fx=4, fy=4, interpolation=cv2.INTER_CUBIC)
-        cv2.imshow("ENTRADA", img)
+        #cv2.imshow("ENTRADA", img)
 
         # Converte para escala de cinza
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        # cv2.imshow("Escala Cinza", img)
+        #cv2.imshow("Escala Cinza", img)
 
         # Binariza imagem
         ret, img = cv2.threshold(img, 70, 255, cv2.THRESH_BINARY)
-        cv2.imshow("Limiar", img)
+        #cv2.imshow("Limiar", img)
 
         # Desfoque na Imagem
         img = cv2.GaussianBlur(img, (5, 5), 0)
-        # cv2.imshow("Desfoque", img)
+        cv2.imshow("Desfoque", img)
 
         cv2.imwrite(path_img + "-ocr.jpg", img)
         imagem = Image.open(path_img + "-ocr.jpg")
@@ -48,7 +49,7 @@ class TesseractOCR():
             text = text.replace(x, '')
         return text
 
-path = "C:/Tesseract-OCR/saidas/roi"
+path = out+"carro3"
 TesseractOCR().leituraImg(path)
 
 

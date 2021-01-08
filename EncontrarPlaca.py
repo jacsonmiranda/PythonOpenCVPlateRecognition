@@ -7,6 +7,7 @@ from PIL import Image
 import tkinter
 import pytesseract
 import cv2
+out = "/home/jacson/Desktop/PythonOpenCVPlateRecognition/output/";
 
 def desenhaContornos(contornos, imagem):
 
@@ -22,14 +23,18 @@ def desenhaContornos(contornos, imagem):
              (x, y, lar, alt) = cv2.boundingRect(c)
              cv2.rectangle(imagem, (x, y), (x + lar, y + alt), (0, 255, 0), 2)
              #segmenta a placa da imagem
-             roi = imagem[(y+15):y+alt, x:x+lar]
-             cv2.imwrite("C:/Tesseract-OCR/saidas/roi.jpg", roi)
+             roi = imagem[y:y+alt, x:x+lar]
+             cv2.imwrite(out+"carro4.jpg", roi)
+             print(roi)
+             f = open(out+"out.txt","w")
+             f.write("Teste")
+             f.close()
 
     return imagem
 
 def reconhecimentoOCR():
 
-    entrada = cv2.imread("C:/Tesseract-OCR/saidas/roi.jpg")
+    entrada = cv2.imread(out+"carro4.jpg")
     # cv2.imshow("ENTRADA", img)
 
     # redmensiona a imagem da placa em 4x
@@ -37,7 +42,7 @@ def reconhecimentoOCR():
 
     # Converte para escala de cinza
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # cv2.imshow("Escala Cinza", img)
+    cv2.imshow("Escala Cinza", img)
 
     # Binariza imagem
     ret, img = cv2.threshold(img, 70, 255, cv2.THRESH_BINARY)
@@ -45,15 +50,15 @@ def reconhecimentoOCR():
 
     # Desfoque na Imagem
     img = cv2.GaussianBlur(img, (5, 5), 0)
-    # cv2.imshow("Desfoque", img)
+    cv2.imshow("Desfoque", img)
 
     # Aplica reconhecimento ROI Tesseract
-    cv2.imwrite("C:/Tesseract-OCR/saidas/roi-ocr.jpg", img)
-    imagem = Image.open("C:/Tesseract-OCR/saidas/roi-ocr.jpg")
+    cv2.imwrite(out+"carro4-ocr.jpg", img)
+    imagem = Image.open(out+"carro4-ocr.jpg")
     saida = pytesseract.image_to_string(imagem, lang='eng')
 
     if len(saida) > 0:
-        print(saida)
+        #print(saida)
         texto = removerChars(saida)
     else:
         texto = "Reconhecimento Falhou"
@@ -88,7 +93,7 @@ def buscaRetanguloPlaca(source):
         img_result = cv2.GaussianBlur(img_result, (5, 5), 0)
 
         # lista os contornos
-        img, contornos, hier = cv2.findContours(img_result, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        contornos, hier = cv2.findContours(img_result, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
         # limite horizontal
         cv2.line(frame, (0, 500), (1280, 500), (0, 0, 255), 1)
@@ -113,12 +118,13 @@ def buscaRetanguloPlaca(source):
 def removerChars(text):
     str = "!@#%¨&*()_+:;><^^}{`?|~¬/=,.'ºª»‘"
     for x in str:
+        print(x)
         text = text.replace(x, '')
     return text
 
 if __name__ == "__main__":
     
-    source = "resource\\video1-480p.mp4"
-    sourceHD = "resource\\video1-720p.mkv"
+    source = "resource/video1-480p.mp4"
+    sourceHD = "resource/video1-720p.mkv"
 
     buscaRetanguloPlaca(sourceHD)
